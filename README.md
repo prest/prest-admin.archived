@@ -1,4 +1,5 @@
 # prest-admin
+Make admin interface to [prest](https://github.com/prest) project
 
 https://github.com/go-br/crud
 
