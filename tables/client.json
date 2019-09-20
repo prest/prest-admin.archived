@@ -1,0 +1,8 @@
+{
+    "name": "client",
+    "columns": [
+        {"label": "ID", "name": "id", "type": "number"},
+        {"label": "Name", "name": "name", "type": "text"}
+    ],
+    "list_columns": "id,name"
+}

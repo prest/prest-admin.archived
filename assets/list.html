@@ -1,0 +1,23 @@
+{{ $name := .Name }}
+<h1>List: {{ $name }}</h1>
+<a href="/padmin/create/{{ $name }}">Add {{ $name }}</a>
+<table>
+    <thead>
+        <tr>
+            {{ range .Columns }}
+                <th>{{ .Label }}</th>
+            {{ end }}
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {{ range $item := .Data }}
+        <tr>
+            {{ range $index ,$value := $item }}
+                <td>{{ $value }}</td>
+            {{ end }}
+            <td><a href='/padmin/edit/{{ $name }}/{{ index $item "id" }}'>Edit</a></td>
+        </tr>
+        {{ end }}        
+    </tbody>
+</table>

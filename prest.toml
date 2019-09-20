@@ -1,0 +1,13 @@
+migrations = "./migrations"
+
+# [jwt]
+# key = "mysecretkey"
+
+debug=true
+
+[http]
+port = 8000
+
+[pg]
+user = "postgres"
+database = "nuveoapp"

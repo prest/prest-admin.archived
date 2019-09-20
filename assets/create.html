@@ -1,0 +1,7 @@
+<h1>Create: {{ .Name }}</h1>
+<form action="/padmin/create/{{ .Name }}" method="post">
+    {{ range .Columns }}
+        {{ .Label }}: <input type="text" name="{{ .Name }}" /><br />
+    {{ end }}
+    <input type="submit" value="Enviar" />
+</form>

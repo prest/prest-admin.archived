@@ -1,0 +1,11 @@
+{
+    "name": "client_contacts",
+    "columns": [
+        {"label": "ID", "name": "id", "type": "number"},
+        {"label": "Name", "name": "name", "type": "text"},
+        {"label": "Phone", "name": "phone", "type": "text"},
+        {"label": "E-mail", "name": "email", "type": "text"},
+        {"label": "Client ID", "name": "client_id", "type": "number"}
+    ],
+    "list_columns": "id,name,phone,email"
+}

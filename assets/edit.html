@@ -1,0 +1,8 @@
+{{ $item := index .Data 0 }}
+<h1>Edit: {{ .Name }}</h1>
+    <form action="/padmin/edit/{{ .Name }}" method="post">
+    {{ range .Columns }}
+        {{ .Label }}: <input type="text" name="{{ .Name }}" value="{{ index $item .Name }}" /><br />
+    {{ end }}
+    <input type="submit" value="Enviar" />
+</form>
