@@ -12,6 +12,7 @@ import (
 	"text/template"
 )
 
+var DATABASE string
 var PREST_ENDPOINT string
 var ROOT_FOLDER string
 
@@ -38,7 +39,8 @@ var Tables map[string]Table
 var Menu map[string][]string
 
 // Load templates
-func Load() (err error) {
+func Load(database string) (err error) {
+	DATABASE = database
 	PREST_ENDPOINT = os.Getenv("PREST_ENDPOINT")
 	if PREST_ENDPOINT == "" {
 		PREST_ENDPOINT = "http://localhost:8001"

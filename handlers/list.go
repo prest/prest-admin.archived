@@ -22,7 +22,7 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		resp, err := httpClientHelper(token.Value, http.MethodGet, fmt.Sprintf("http://localhost:3000/gocrud/public/%s", table.Name), nil)
 	*/
-	endpoint := fmt.Sprintf("%s/gocrud/public/%s?_select=%s", PREST_ENDPOINT, table.Name, table.ListColumns)
+	endpoint := fmt.Sprintf("%s/%s/public/%s?_select=%s", PREST_ENDPOINT, DATABASE, table.Name, table.ListColumns)
 	resp, err := httpClientHelper(token, http.MethodGet, endpoint, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

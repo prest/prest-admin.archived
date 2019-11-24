@@ -14,7 +14,7 @@ import (
 
 func main() {
 	config.Load()
-	err := handlers.Load()
+	err := handlers.Load(config.PrestConf.PGDatabase)
 	if err != nil {
 		log.Panic(err)
 	}

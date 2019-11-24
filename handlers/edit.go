@@ -89,7 +89,7 @@ func EditHandlerPut(w http.ResponseWriter, r *http.Request) {
 	resp, err := httpClientHelper(
 		token,
 		http.MethodPut,
-		fmt.Sprintf("%s/gocrud/public/%s?id=$eq.%s", PREST_ENDPOINT, table, key),
+		fmt.Sprintf("%s/%s/public/%s?id=$eq.%s", PREST_ENDPOINT, DATABASE, table, key),
 		bytes.NewReader(b))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

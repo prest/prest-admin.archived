@@ -57,7 +57,7 @@ func CreateHandlerPost(w http.ResponseWriter, r *http.Request) {
 	resp, err := httpClientHelper(
 		token,
 		http.MethodPost,
-		fmt.Sprintf("%s/gocrud/public/%s", PREST_ENDPOINT, table),
+		fmt.Sprintf("%s/%s/public/%s", PREST_ENDPOINT, DATABASE, table),
 		bytes.NewReader(b))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
