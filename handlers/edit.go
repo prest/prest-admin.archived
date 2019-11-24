@@ -24,7 +24,7 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	*/
-	listURL := fmt.Sprintf("%s/gocrud/public/%s?id=$eq.%s", PREST_ENDPOINT, table, key)
+	listURL := fmt.Sprintf("%s/%s/public/%s?id=$eq.%s", PREST_ENDPOINT, DATABASE, table, key)
 	resp, err := httpClientHelper(
 		token,
 		http.MethodGet,
