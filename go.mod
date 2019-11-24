@@ -1,4 +1,4 @@
-module github.com/joelmdesouza/prest-admin
+module github.com/prest/prest-admin
 
 go 1.12
 

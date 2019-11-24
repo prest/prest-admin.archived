@@ -4,11 +4,11 @@ import (
 	"log"
 
 	"github.com/gorilla/mux"
-	"github.com/joelmdesouza/prest-admin/handlers"
 	"github.com/prest/cmd"
 	"github.com/prest/config"
 	"github.com/prest/config/router"
 	"github.com/prest/middlewares"
+	"github.com/prest/prest-admin/handlers"
 	"github.com/urfave/negroni"
 )
 
