@@ -32,6 +32,7 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 func CreateHandlerPost(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	table := vars["table"]
+	tableStruct := Tables[table]
 	token := ""
 	/*
 		token, err := r.Cookie("token")
@@ -47,6 +48,9 @@ func CreateHandlerPost(w http.ResponseWriter, r *http.Request) {
 	}
 	data := make(map[string]interface{})
 	for key, value := range r.PostForm {
+		if key == tableStruct.PrimaryKey {
+			continue
+		}
 		data[key] = value[0]
 	}
 	b, err := json.Marshal(data)

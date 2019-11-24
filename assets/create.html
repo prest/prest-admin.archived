@@ -1,6 +1,7 @@
 {{ define "content" }}
 
 {{ $name := .Table.Name }}
+{{ $primaryKey := .Table.PrimaryKey }}
 {{ $columns := .Table.Columns }}
 
 <div class="container-fluid">
@@ -14,12 +15,14 @@
     </div>
     <form action="/padmin/create/{{ $name }}" method="POST">
         {{ range $columns }}
-            <div class="form-group row">
-                <label for="{{ .Name }}" class="col-sm-2 col-form-label col-form-label-sm">{{ .Label }}</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control form-control-sm" id="{{ .Name }}" name="{{ .Name }}">
+            {{ if ne .Name $primaryKey }}
+                <div class="form-group row">
+                    <label for="{{ .Name }}" class="col-sm-2 col-form-label col-form-label-sm">{{ .Label }}</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control form-control-sm" id="{{ .Name }}" name="{{ .Name }}">
+                    </div>
                 </div>
-            </div>
+            {{end}}            
         {{ end }}
         <div class="form-group row">
             <div class="col-sm-10">
