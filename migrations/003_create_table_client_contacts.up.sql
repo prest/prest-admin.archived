@@ -11,6 +11,3 @@ CREATE TABLE client_contacts
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
-
-ALTER TABLE client_contacts
-    OWNER to postgres;

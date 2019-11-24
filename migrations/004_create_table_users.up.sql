@@ -7,9 +7,6 @@ CREATE TABLE users
     PRIMARY KEY (id)
 );
 
-ALTER TABLE public.users
-    OWNER to postgres;
-
 -- default username=gocrud@example.com password=1234
 INSERT INTO public.users(
 	id, username, password, customer_id)
