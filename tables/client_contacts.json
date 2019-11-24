@@ -1,4 +1,5 @@
 {
+    "primary_key": "id",
     "name": "client_contacts",
     "columns": [
         {"label": "ID", "name": "id", "type": "number"},
