@@ -1,5 +1,6 @@
 {
-    "name": "client",
+    "primary_key": "id",
+    "name": "client",    
     "columns": [
         {"label": "ID", "name": "id", "type": "number"},
         {"label": "Name", "name": "name", "type": "text"}

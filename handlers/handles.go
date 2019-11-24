@@ -1,20 +1,27 @@
 package handlers
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
 	"text/template"
-
-	"github.com/gorilla/mux"
 )
 
+var PREST_ENDPOINT string
+var ROOT_FOLDER string
+
+type Data struct {
+	Menu  map[string][]string
+	Table Table
+}
+
 type Table struct {
+	PrimaryKey  string   `json:"primary_key"`
 	Name        string   `json:"name"`
 	Columns     []Column `json:"columns"`
 	Data        []map[string]interface{}
@@ -26,168 +33,19 @@ type Column struct {
 	Type  string `json:"type"`
 }
 
-var tmplList *template.Template
-var tmplCreate *template.Template
-var tmplEdit *template.Template
-
 var Tables map[string]Table
+
+var Menu map[string][]string
 
 // Load templates
 func Load() (err error) {
-	tmplList = template.Must(template.ParseFiles("./assets/list.html"))
-	tmplCreate = template.Must(template.ParseFiles("./assets/create.html"))
-	tmplEdit = template.Must(template.ParseFiles("./assets/edit.html"))
+	PREST_ENDPOINT = os.Getenv("PREST_ENDPOINT")
+	if PREST_ENDPOINT == "" {
+		PREST_ENDPOINT = "http://localhost:8001"
+	}
+	ROOT_FOLDER = "."
 	err = loadFilesTable()
 	return
-}
-
-// CreateHandler handlerfunc create
-func CreateHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	table := vars["table"]
-	data, _ := Tables[table]
-	err := templateHelper(
-		w,
-		data,
-		"create.html",
-		"./assets/create.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
-
-// CreateHandlerPost handlerfunc create
-func CreateHandlerPost(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	table := vars["table"]
-	//data, _ := Tables[table]
-	token := ""
-	/*
-		token, err := r.Cookie("token")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusForbidden)
-			return
-		}
-	*/
-	err := r.ParseForm()
-	if err != nil {
-		http.Error(w, "form error", http.StatusInternalServerError)
-		return
-	}
-	data := make(map[string]interface{})
-	for key, value := range r.PostForm {
-		data[key] = value[0]
-	}
-	b, err := json.Marshal(data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	resp, err := httpClientHelper(
-		token,
-		http.MethodPost,
-		fmt.Sprintf("http://localhost:3000/gocrud/public/%s", table),
-		bytes.NewReader(b))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	b, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	http.Redirect(w, r, fmt.Sprintf("/padmin/list/%s", table), http.StatusSeeOther)
-	return
-}
-
-// EditHandler handlerfunc edit
-func EditHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	table := vars["table"]
-	key := vars["key"]
-	data, _ := Tables[table]
-	/*
-		err := templateHelper(
-			w,
-			data,
-			"edit.html",
-			"./assets/edit.html")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	*/
-	token := ""
-	/*
-		token, err := r.Cookie("token")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusForbidden)
-			return
-		}
-	*/
-	listURL := fmt.Sprintf("http://localhost:3000/gocrud/public/%s?id=$eq.%s", table, key)
-	resp, err := httpClientHelper(
-		token,
-		http.MethodGet,
-		listURL,
-		nil)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = json.NewDecoder(resp.Body).Decode(&data.Data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = templateHelper(
-		w,
-		data,
-		"edit.html",
-		"./assets/edit.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
-
-// ListHandler handlerfunc list
-func ListHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	tableName := vars["table"]
-	table, _ := Tables[tableName]
-	token := ""
-	/*
-		token, err := r.Cookie("token")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusForbidden)
-			return
-		}
-		resp, err := httpClientHelper(token.Value, http.MethodGet, fmt.Sprintf("http://localhost:3000/gocrud/public/%s", table.Name), nil)
-	*/
-	endpoint := fmt.Sprintf("http://localhost:3000/gocrud/public/%s?_select=%s", table.Name, table.ListColumns)
-	resp, err := httpClientHelper(token, http.MethodGet, endpoint, nil)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = json.NewDecoder(resp.Body).Decode(&table.Data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = templateHelper(
-		w,
-		table,
-		"list.html",
-		"./assets/list.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 }
 
 func httpClientHelper(token, method, url string, body io.Reader) (resp *http.Response, err error) {
@@ -202,13 +60,18 @@ func httpClientHelper(token, method, url string, body io.Reader) (resp *http.Res
 	return
 }
 
-func templateHelper(w http.ResponseWriter, table Table, name string, file string) (err error) {
-	tpl, err := template.New(name).ParseFiles(file)
+func templateHelper(w http.ResponseWriter, data Data, name string, file string) (err error) {
+	base := fmt.Sprintf("%s/assets/base.html", ROOT_FOLDER)
+	tpl, err := template.New(name).ParseFiles(base, file)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = tpl.Execute(w, table)
+	err = tpl.ExecuteTemplate(w, "menu", data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	err = tpl.ExecuteTemplate(w, "content", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -216,7 +79,7 @@ func templateHelper(w http.ResponseWriter, table Table, name string, file string
 }
 
 func getTablesByJson() (files []string, err error) {
-	dir := "./tables"
+	dir := fmt.Sprintf("%s/tables", ROOT_FOLDER)
 	ext := "*.json"
 	tempFiles, err := filepath.Glob(filepath.Join(dir, ext))
 	if err != nil {
@@ -232,6 +95,7 @@ func loadFilesTable() (err error) {
 		return
 	}
 	Tables = make(map[string]Table)
+	Menu = make(map[string][]string)
 	for _, f := range files {
 		c, err := ioutil.ReadFile(f)
 		if err != nil {
@@ -244,6 +108,8 @@ func loadFilesTable() (err error) {
 			return errors.New("loadFilesTable: error unmarshal table " + f)
 		}
 		Tables[table.Name] = table
+		Menu["Tables"] = append(Menu["Tables"], table.Name)
 	}
+	fmt.Println(Menu)
 	return
 }

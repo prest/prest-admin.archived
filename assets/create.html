@@ -1,7 +1,32 @@
-<h1>Create: {{ .Name }}</h1>
-<form action="/padmin/create/{{ .Name }}" method="post">
-    {{ range .Columns }}
-        {{ .Label }}: <input type="text" name="{{ .Name }}" /><br />
-    {{ end }}
-    <input type="submit" value="Enviar" />
-</form>
+{{ define "content" }}
+
+{{ $name := .Table.Name }}
+{{ $columns := .Table.Columns }}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-11">
+            <h1>Create: {{ $name }}</h1> 
+        </div>
+        <div class="col-sm-1">
+            <a class="btn btn-secondary" href="/padmin/list/{{ $name }}">List</a>
+        </div>                 
+    </div>
+    <form action="/padmin/create/{{ $name }}" method="POST">
+        {{ range $columns }}
+            <div class="form-group row">
+                <label for="{{ .Name }}" class="col-sm-2 col-form-label col-form-label-sm">{{ .Label }}</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control form-control-sm" id="{{ .Name }}" name="{{ .Name }}">
+                </div>
+            </div>
+        {{ end }}
+        <div class="form-group row">
+            <div class="col-sm-10">
+                <button type="submit" class="btn btn-secondary">Save</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{{ end }}
